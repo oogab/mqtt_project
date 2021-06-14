@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        let socket = null
+        let timer = null
+
+        $(document).ready(function () {
+            socket = io.connect(); // port 3000
+            // Node.js에서 보낸 데이터를 수신하는 부분
+            socket.on("socket_evt_mqtt", function (data) {
+                data = JSON.parse(data);
+                $(".mqttlist").html('<li>' + data.tmp + '(' + data.hum + '%)' + '</li>')
+            })
+            if (timer == null) {
+                timer = window.setInterval("timer1()", 1000)
+            }
+        })
+
+        function timer1() {
+            socket.emit("socket_evt_mqtt", JSON.stringify({}))
+            console.log("----------")
+        }
+
+        function ledOnOff(value) {
+            // {"led" : 1}, {"led" : 2}
+            socket.emit("socket_evt_led", JSON.stringify({led : Number(value)}))
+        }
+
+        function ajaxledOnOff(value) {
+            let val = null;
+            console.log(value)
+            if (value === 1) val = "on"
+            else if (value === 2) val = "off"
+            $.ajax({
+                url : "http://127.0.0.1:3000/devices/led/"+val,
+                type : "post",
+                success : ledStatus,
+                error : function() {alert("error")}
+            })
+        }
+
+        function ledStatus(obj) {
+            $("#led").html("<font color='red'>" + obj.led + "</font> 되었습니다.")
+        }
+    </script>
+</head>
+
+<body>
+    <h1>MQTT 모니터링 서비스</h1>
+    <div id="msg">
+        <div id="mqtt_Logs">
+            <ul class="mqttlist"></ul>
+        </div>
+    </div>
+    <h1>socket 통신 방식 (LED 제어)</h1>
+    <button onclick="ledOnOff(1)">LED_ON</button>
+    <button onclick="ledOnOff(2)">LED_OFF</button>
+    <h1>REST full Service 통신 방식 (LED 제어)</h1>
+    <button onclick="ajaxledOnOff(1)">LED_ON</button>
+    <button onclick="ajaxledOnOff(2)">LED_OFF</button>
+    <div id="led">LED STATUS</div>
+</body>
+
+</html>
