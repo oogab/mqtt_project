@@ -24,7 +24,7 @@ app.use('/devices', deviceRouter)
 
 // MongoDB 접속
 const mongoDB = require("mongodb").MongoClient
-const url = "mongodb://wook:rejavaji@127.0.0.1:27017/?authSource=admin"
+const url = "mongodb://wook:****@127.0.0.1:27017/?authSource=admin"
 let dbObj = null // DB에 저장할 데이터를 담을 변수
 
 mongoDB.connect(url, function (err, db) {
