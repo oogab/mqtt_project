@@ -4,7 +4,7 @@
 #include <string.h>
 
 char ssid[] = "oogab";
-char pass[] = "rejavaji";
+char pass[] = "";
 byte server1[] = {192, 168, 0, 46}; // MQTT Server IP (MQTT Broker)
 int port = 1883;
 DHT11 dht11(4);
